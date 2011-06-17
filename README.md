@@ -697,14 +697,6 @@ priority for that resource.
 Translating the `options` node dynamically into something more widely used, such as
 [WADL][8], is an exercise left to the reader for the moment.
 
-<div id="slides">
-<hr>
-</div>
-
-# The Slides Example
-
-To illustrate the points described above, this project includes a complete example.
-
 [1]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml%2313050
 [2]: http://www.jenitennison.com/blog/node/151
 [3]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml%2313050
