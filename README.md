@@ -1,7 +1,7 @@
 # The REST endpoint library
 
 (Are you anxious and impatient? Do you want to just *see it work*?
-Then you might prefer to skip down to the <a href="blob/master/example.md">slides example</a>).
+Then you might prefer to skip down to the <a href="ml-rest-lib/blob/master/example.md">slides example</a>).
 
 The REST endpoint library is a set of [XQuery][10] modules designed to
 make the development and deployment of [RESTful web services][9] on
