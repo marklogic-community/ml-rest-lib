@@ -1,0 +1,84 @@
+default namespace = "http://marklogic.com/appservices/rest"
+
+start = Options
+
+Options =
+   element options {
+      attribute user-params { "ignore" | "allow" | "forbid" }?,
+      Request*
+   }
+
+Request =
+   element request {
+      attribute uri { text }?,
+      attribute endpoint { text }?,
+      attribute user-params { "ignore" | "allow" | "forbid" }?,
+      (UriParam | Param | Http | Condition)*
+   }
+
+UriParam =
+   element uri-param {
+      attribute name { text },
+      attribute as { text }?,
+      text
+   }
+
+Param =
+   element param {
+      attribute name { text },
+      attribute as { text }?,
+      attribute values { text }?,
+      attribute match { text }?,
+      attribute default { text }?,
+      attribute required { "true" | "false" }?,
+      attribute repeatable { "true" | "false" }?,
+      text
+   }
+
+Http =
+   element http {
+      attribute method { text },
+      attribute user-params { "ignore" | "allow" | "forbid" }?,
+      (Param | Condition)*
+   }
+
+Privilege =
+   element privilege { text }
+
+Kind =
+   element kind { text }
+
+Condition = Or | And | Function | Auth | Accept | UserAgent
+
+Or =
+   element or {
+      Condition+
+   }
+
+And =
+   element and {
+      Condition+
+   }
+
+Auth =
+   element auth {
+      (Privilege+, Kind?)
+   }
+
+Accept =
+   element accept {
+      text
+   }
+
+UserAgent =
+   element user-agent {
+      text
+   }
+
+Function =
+   element function {
+      attribute ns { xsd:anyURI },
+      attribute apply { xsd:QName },
+      attribute at { xsd:anyURI },
+      empty
+   }
