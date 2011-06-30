@@ -1,7 +1,7 @@
 xquery version "1.0-ml";
 
 import module namespace rest="http://marklogic.com/appservices/rest"
-       at "/MarkLogic/appservices/utils/rest.xqy";
+       at "/ml-rest-lib/rest.xqy";
 
 import module namespace endpoint="http://marklogic.com/appservices/endpoints"
        at "/example/endpoints.xqy";

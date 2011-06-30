@@ -3,7 +3,7 @@ xquery version "1.0-ml";
 module namespace endpoints="http://marklogic.com/appservices/endpoints";
 
 import module namespace rest="http://marklogic.com/appservices/rest"
-       at "/MarkLogic/appservices/utils/rest.xqy";
+       at "/ml-rest-lib/rest.xqy";
 
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
