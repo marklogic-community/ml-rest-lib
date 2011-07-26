@@ -1,3 +1,9 @@
+# WARNING
+
+I've rewritten a big hunk of the library. Need to finish porting
+the unit tests and do a little cleanup, then I'll merge back into the
+trunk.
+
 # The REST endpoint library
 
 (Are you anxious and impatient? Do you want to just *see it work*?
