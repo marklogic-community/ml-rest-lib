@@ -4,7 +4,7 @@ start = Options
 
 Options =
    element options {
-      attribute user-params { "ignore" | "allow" | "forbid" }?,
+      attribute user-params { "ignore" | "allow" | "allow-dups" | "forbid" }?,
       Request*
    }
 
@@ -12,7 +12,7 @@ Request =
    element request {
       attribute uri { text }?,
       attribute endpoint { text }?,
-      attribute user-params { "ignore" | "allow" | "forbid" }?,
+      attribute user-params { "ignore" | "allow" | "allow-dups" | "forbid" }?,
       (UriParam | Param | Http | Condition)*
    }
 
@@ -26,6 +26,7 @@ UriParam =
 Param =
    element param {
       attribute name { text },
+      attribute alias { text }?,
       attribute as { text }?,
       attribute values { text }?,
       attribute match { text }?,
@@ -38,7 +39,7 @@ Param =
 Http =
    element http {
       attribute method { text },
-      attribute user-params { "ignore" | "allow" | "forbid" }?,
+      attribute user-params { "ignore" | "allow" | "allow-dups" | "forbid" }?,
       (Param | Condition)*
    }
 

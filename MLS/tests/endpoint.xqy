@@ -70,7 +70,7 @@ declare function local:seq-err(
    else concat($key, ": expected ", count($exp), " values; got ", count($val)),
    for $e at $index in $exp
    let $v := $val[$index]
-   where string($e) != string($val)
+   where string($e) != string($v)
    return
      concat($key, " value ", $index, ": '", $e, "' != '", $v, "'"))
 };
