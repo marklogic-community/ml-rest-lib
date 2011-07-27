@@ -608,6 +608,691 @@ declare variable $tests:unit-tests as element(tests:unit-tests) :=
       <result>REST-UNSUPPORTEDMETHOD OPTIONS</result>
     </http-test>
   </test-group>
+
+  <test-group id="group022">
+    <auth-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <auth>
+            <privilege>http://marklogic.com/xdmp/privileges/infostudio</privilege>
+            <kind>execute</kind>
+          </auth>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>REST-FAILEDCONDITION http://marklogic.com/xdmp/privileges/infostudio execute</result>
+    </auth-test>
+    <auth-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET">
+          <auth>
+            <privilege>http://marklogic.com/xdmp/privileges/value</privilege>
+            <kind>execute</kind>
+          </auth>
+        </http>
+        <http method="POST"/>
+      </request>
+      <verb>GET</verb>
+      <result>SEC-PRIVDNE</result>
+    </auth-test>
+    <auth-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <auth>
+          <privilege>http://marklogic.com/xdmp/privileges/infostudio</privilege>
+          <kind>execute</kind>
+        </auth>
+        <http method="GET"/>
+        <http method="POST">
+        </http>
+      </request>
+      <verb>GET</verb>
+      <result>REST-FAILEDCONDITION http://marklogic.com/xdmp/privileges/infostudio execute</result>
+    </auth-test>
+    <auth-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <auth>
+          <privilege>http://marklogic.com/xdmp/privileges/value</privilege>
+          <kind>execute</kind>
+        </auth>
+        <http method="GET"/>
+        <http method="POST">
+        </http>
+      </request>
+      <verb>GET</verb>
+      <result>SEC-PRIVDNE</result>
+    </auth-test>
+  </test-group>
+
+  <test-group id="group023">
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <accept>application/xml</accept>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>GET</verb>
+      <accept-header>application/xml</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <accept>yeah-like-your-going-to-accept/this</accept>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <accept-header>application/xml</accept-header>
+      <result>REST-UNACCEPTABLETYPE 'yeah-like-your-going-to-accept/this'</result>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET">
+          <accept>bar/foo</accept>
+        </http>
+        <http method="POST">
+          <accept>foo/bar</accept>
+        </http>
+      </request>
+      <verb>GET</verb>
+      <accept-header>foo/bar</accept-header>
+      <result>REST-UNACCEPTABLETYPE 'bar/foo'</result>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <accept>application/xml</accept>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>GET</verb>
+      <accept-header>foo/bar</accept-header>
+      <accept-header>application/xml</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET">
+          <accept>application/xml</accept>
+        </http>
+        <http method="POST"/>
+      </request>
+      <verb>GET</verb>
+      <accept-header>foo/bar</accept-header>
+      <accept-header>application/xml</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <accept>application/xml</accept>
+        <http method="GET">
+          <accept>bar/baz</accept>
+        </http>
+        <http method="POST">
+          <accept>foo/bar</accept>
+        </http>
+      </request>
+      <verb>OPTIONS</verb>
+      <accept-header>foo/bar</accept-header>
+      <accept-header>application/xml</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET">
+          <accept>baz/qux</accept>
+          <accept>application/xml</accept>
+        </http>
+        <http method="POST"/>
+      </request>
+      <verb>GET</verb>
+      <accept-header>foo/bar</accept-header>
+      <accept-header>application/xml</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <accept>application/xml</accept>
+        <http method="GET"/>
+        <http method="POST">
+          <accept>foo/bar</accept>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <accept-header>application/xml</accept-header>
+      <accept-header>foo/bar</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <accept>foo/bar</accept>
+        <http method="GET"/>
+        <http method="POST">
+          <accept>application/xml</accept>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <accept-header>application/xml</accept-header>
+      <accept-header>foo/bar</accept-header>
+    </accept-test>
+    <accept-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <accept-header>yeah-i-really-sent/this</accept-header>
+    </accept-test>
+  </test-group>
+
+  <test-group id="group024">
+    <!-- - - - parameter type tests - - - -->
+    <!-- invalid declared type for all methods-->
+    <param-test>
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <param name="foo" as="bar"/>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>REST-INVALIDTYPE 13241234134 as bar</result>
+      <check><report xmlns="http://marklogic.com/appservices/rest" id="BAD-TYPE">bar is not a valid type.</report></check>
+    </param-test>
+    <param-test>
+      <!-- invalid declared type for method-->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" as="bar"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>REST-INVALIDTYPE 13241234134 as bar</result>
+      <check><report xmlns="http://marklogic.com/appservices/rest" id="BAD-TYPE">bar is not a valid type.</report></check>
+    </param-test>
+    <param-test>
+      <!-- the @as value is normalized -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <param name="foo" as=" unsignedLong "/>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="foo">
+            <map:value xsi:type="xs:untypedAtomic">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- untyped for method -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="foo">
+            <map:value xsi:type="xs:untypedAtomic">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- untyped for any method -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <param name="foo"/>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="foo">
+            <map:value xsi:type="xs:untypedAtomic">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- invalid type on parameter of all methods -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <param name="foo" as="unsignedLong"/>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">bar</param>
+      <result>REST-INVALIDTYPE bar as unsignedLong</result>
+    </param-test>
+    <param-test>
+      <!-- invalid type on parameter of method -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">bar</param>
+      <result>REST-INVALIDTYPE bar as unsignedLong</result>
+    </param-test>
+    <param-test>
+      <!-- valid type on parameter of all methods -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <param name="foo" as="unsignedLong"/>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="foo">
+            <map:value xsi:type="xs:unsignedLong">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- valid type on parameter of method -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="foo">
+            <map:value xsi:type="xs:unsignedLong">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- invalid for enumeration on parameter -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <param name="foo" values="bar | baz"/>
+        <http method="GET"/>
+        <http method="POST"/>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">qux</param>
+      <result>REST-INVALIDTYPE qux as (bar | baz)</result>
+    </param-test>
+    <param-test>
+      <!-- - - - parameter name tests - - - -->
+      <!-- invalid name for method with parameters -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <result>REST-UNSUPPORTEDPARAM bar</result>
+    </param-test>
+    <param-test>
+      <!-- valid name for method without parameters -->
+      <request xmlns="http://marklogic.com/appservices/rest" user-params="allow">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>GET</verb>
+      <param name="bar">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:untypedAtomic">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- one valid for method, unknown invalid for all methods -->
+      <request xmlns="http://marklogic.com/appservices/rest" user-params="forbid">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="baz">13241234134</param>
+      <result>REST-UNSUPPORTEDPARAM baz</result>
+    </param-test>
+    <param-test>
+      <!-- one valid for method, unknown invalid for specific method -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="baz">13241234134</param>
+      <result>REST-UNSUPPORTEDPARAM baz</result>
+    </param-test>
+    <param-test>
+      <!-- one valid for method, unknown invalid for all methods -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="baz">13241234134</param>
+      <result>REST-UNSUPPORTEDPARAM baz</result>
+    </param-test>
+    <param-test>
+      <!-- one valid for method, unknown valid for specific method -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST" user-params="allow">
+          <param name="bar" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="baz">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="baz">
+            <map:value xsi:type="xs:untypedAtomic">13241234134</map:value>
+          </map:entry>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- - - - parameter default value tests - - - -->
+      <!-- default value without type -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" default="555555555"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:untypedAtomic">555555555</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- default value invalid for type -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" default="baz"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>REST-INVALIDTYPE baz as unsignedLong</result>
+    </param-test>
+    <param-test>
+      <!-- default value valid for type -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" default="555555555"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">555555555</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- overridden default value with type -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" default="555555555"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- - - - parameter requirement tests - - - -->
+      <!-- missing one required param -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" required="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>REST-REQUIREDPARAM foo</result>
+    </param-test>
+    <param-test>
+      <!-- missing one of two required params -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" required="true"/>
+          <param name="bar" required="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>REST-REQUIREDPARAM bar</result>
+    </param-test>
+    <param-test>
+      <!-- one default, one required -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" required="true"/>
+          <param name="bar" as="unsignedLong" default="555555555"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="foo">13241234134</param>
+      <result>
+        <map:map>
+          <map:entry key="foo">
+            <map:value xsi:type="xs:untypedAtomic">13241234134</map:value>
+          </map:entry>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">555555555</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- one default, one required missing -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="foo" required="true"/>
+          <param name="bar" as="unsignedLong" default="555555555"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>REST-REQUIREDPARAM foo</result>
+    </param-test>
+    <param-test>
+      <!-- required with default -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" required="true" default="555555555"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">555555555</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+      <check><report xmlns="http://marklogic.com/appservices/rest" id="INVALID">bar is required and has default</report></check>
+    </param-test>
+    <param-test>
+      <!-- - - - repeatable parameter tests - - - -->
+      <!-- implicitly invalid unrepeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="bar">555555555</param>
+      <result>REST-REPEATEDPARAM bar</result>
+    </param-test>
+    <param-test>
+      <!-- explicitly invalid unrepeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" repeatable="false"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="bar">555555555</param>
+      <result>REST-REPEATEDPARAM bar</result>
+    </param-test>
+    <param-test>
+      <!-- valid repeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" repeatable="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="bar">555555555</param>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">13241234134</map:value>
+            <map:value xsi:type="xs:unsignedLong">555555555</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- missing required repeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" required="true" repeatable="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>REST-REQUIREDPARAM bar</result>
+    </param-test>
+    <param-test>
+      <!-- valid required repeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" values="baz | qux" required="true" repeatable="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">qux</param>
+      <param name="bar">baz</param>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:untypedAtomic">qux</map:value>
+            <map:value xsi:type="xs:untypedAtomic">baz</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- defaulted repeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" repeatable="true" default="13241234134"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <result>
+        <map:map>
+          <map:entry key="bar">
+            <map:value xsi:type="xs:unsignedLong">13241234134</map:value>
+          </map:entry>
+        </map:map>
+      </result>
+    </param-test>
+    <param-test>
+      <!-- repeatable with valid and invalid typed values -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" as="unsignedLong" repeatable="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">13241234134</param>
+      <param name="bar">foo</param>
+      <result>REST-INVALIDTYPE foo as unsignedLong</result>
+    </param-test>
+    <param-test>
+      <!-- repeatable with valid and invalid enumerated value -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET"/>
+        <http method="POST">
+          <param name="bar" values="baz | qux" repeatable="true"/>
+        </http>
+      </request>
+      <verb>POST</verb>
+      <param name="bar">baz</param>
+      <param name="bar">foo</param>
+      <result>REST-INVALIDTYPE foo as (baz | qux)</result>
+    </param-test>
+    <param-test>
+      <!-- param not repeatable -->
+      <request xmlns="http://marklogic.com/appservices/rest">
+        <http method="GET">
+          <param name="postOne" as="unsignedLong" repeatable="false"/>
+        </http>
+      </request>
+      <verb>GET</verb>
+      <param name="postOne">1234</param>
+      <param name="postOne">4567</param>
+      <result>REST-REPEATEDPARAM postOne</result>
+    </param-test>
+  </test-group>
 </unit-tests>;
 
 declare function tests:server-root()
