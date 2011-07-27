@@ -31,8 +31,12 @@ let $duris  := for $uri in reverse($uris)
                where doc-available($uri)
                return $uri
 return
-  if (empty($duris))
+  if ($uri eq "/favicon.ico") (: this case bugs me, so make it go away :)
   then
-    xdmp:log(concat("Cannot serve ", $uri))
+    ()
   else
-    doc($duris[1])
+    if (empty($duris))
+    then
+      xdmp:log(concat("Cannot serve ", $uri))
+    else
+      doc($duris[1])
