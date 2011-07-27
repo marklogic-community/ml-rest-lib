@@ -15,10 +15,11 @@ declare option xdmp:mapping "false";
 
 declare variable $endpoints:ENDPOINTS as element(rest:options)
   := <options xmlns="http://marklogic.com/appservices/rest">
-       {(: We don't serve anything else in this example, so redirect / to /slides/ :)}
-       <request uri="^/$" endpoint="/example/redirect.xqy" user-params="allow">
-         <uri-param name="__ml_redirect__">/slides/</uri-param>
-       </request>
+       {(: Serve /default.xqy by default so that the main page will be displayed :)}
+       <request uri="^/$" endpoint="/default.xqy" user-params="ignore"/>
+
+       {(: Run the unit tests if requested :)}
+       <request uri="^/tests(/.*)?$" endpoint="/tests/default.xqy" user-params="allow"/>
 
        {(: Display a list of all the presentations for /slides/ :)}
        <request uri="^/slides/$" endpoint="/example/default.xqy"/>
