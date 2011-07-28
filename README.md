@@ -1,8 +1,6 @@
-# WARNING
-
-I've rewritten a big hunk of the library. Need to finish porting
-the unit tests and do a little cleanup, then I'll merge back into the
-trunk.
+* Version: 1.1
+* Author: Norman Walsh
+* Date: 28 July 2011
 
 # The REST endpoint library
 
@@ -16,7 +14,7 @@ for describing web service endpoints and a library module.
 
 The XML vocabulary is used to write declarative descriptions of the
 endpoints. These description include the mapping of URI parts to
-parameters, additonal parameters, and conditions that must be met in
+parameters, additional parameters, and conditions that must be met in
 order for the incoming request to match.
 
 The library module contains functions that simplify:
@@ -54,7 +52,7 @@ for `index.html` like this:
 
 ### Extracting parameters from the URI
 
-But if all your rewrites were that simple, you'd hardly need a library
+If all your rewrites were that simple, you'd hardly need a library
 to simplify them. A more common sort of example is one that involves
 translating parts of a URI into parameters. Suppose, for example, that
 we have an endpoint for displaying slides from a presentation. The endpoint
@@ -74,25 +72,28 @@ as follows:
 
 As before, the rewriter starts by comparing the request URI with the
 specified `uri` regex. If it doesn't match, we don't have to go
-further. But let's say the request URI is `/slides/uc11/3`, which
-does match.
+further. But if request URI is `/slides/uc11/3`, then it does match.
 
 For each `uri-param`, the rewriter will construct a parameter with
 the specified name using `fn:replace()` to compute the value. So the
 `deck` parameter will have the value `uc11.xml` because
 `fn:replace('/slides/uc11/3', '^/slides/(.+?)/(\d+)$', '$1.xml')` is
-`uc11.xml`.
+`uc11.xml` and the `num` parameter will have the value `3`.
 
-These parameters are passed to the specified endpoint by constructing
-this rewrite:
+These parameters are passed to the specified endpoint. You can think of
+this as a rewrite of the request URI to
 
     /slides.xqy?decl=uc11.xml&num=3
+
+although that isn't exactly what happens for
+[subtle technical reasons](#not-quite-a-rewrite)
+related to POST requests that aren't important right now.
 
 ### Decoding parameters in the endpoint
 
 So far so good. But inside the `slides.xqy` module, we've got to decode
 all those parameters. In the simplest cases, like this one, it's not too
-hard to call `xdmp:get-request-field()` for each parameter, but as endpoints
+hard to call `xdmp:get-request-field()` for each parameter. But as endpoints
 become more complicated with optional parameters and repeated parameters it
 quickly becomes quite tedious.
 
@@ -166,7 +167,7 @@ You can make the theme parameter required:
 
       <param name="theme" required="true"/>
 
-in which case a request URI that doesn't have a `theme` will not match, and an
+in which case a request URI that doesn't have a `theme` will not match in the rewriter, and an
 attempt to call the endpoint without a `theme` will raise an error.
 
 #### Default values
@@ -175,16 +176,9 @@ Alternatively, you can provide a default value:
 
       <param name="theme" default="hires"/>
 
-#### Specifying a list of values
-
-For parameters like `theme`, you may want to specify a delimited list of values
-rather than a type. You can do that too:
-
-      <param name="theme" values="hires|lowres|mobile|bw" default="hires"/>
-
 #### Repeatable parameters
 
-Finally, to round out the options on parameter handling, you can also mark
+You can also mark
 a parameter as repeatable. Without stretching our running "slides" example too far,
 let's say you wanted to allow a `css` parameter to specify additional stylesheets
 for a particular slide. You might want to allow more than one, so you could add
@@ -194,6 +188,49 @@ a `css` parameter like this:
 
 In the rewriter, this would allow any number of `css` parameters. In the endpoint,
 there'd be a single `css` key in the parameters map but its value would be a list.
+
+To recap: if you don't make any declarations about a parameter beyond its name, then
+it's optional but may occur at most once; if you say it's required it must occur at
+least once; and if you say it's repeatable, it may occur more than once.
+
+#### Choosing from a list of values instead of an atomic type
+
+For parameters that must be numbers, booleans, or other atomic types, the
+`as` attribute is all you need. But suppose you want to limit the value to
+a discrete set of possibilities?
+
+A parameter like `theme`, for example, might be a string but might accept only
+a few possible values. You can do that with the `values` attribute:
+
+      <param name="theme" values="hires|lowres|mobile|bw" default="hires"/>
+
+With this declaration, the `theme` must be exactly one of "hires", "lowres",
+"mobile", or "bw".
+
+#### Aliases
+
+Finally, to round out the options on parameter handling, you can also specify
+aliases. This option is useful if you decide to change the names of parameters
+on the server but don't want to break existing clients. Suppose, for example,
+that you extend your slides framework so that it accepts stylesheets in languages
+other than CSS. Then you might want to rename the `css` parameter to `style`.
+If you specify the parameter this way:
+
+      <param name="style" alias="css" repeatable="true"/>
+
+then the endpoint will see a parameter named `style` even if the user specifies
+`css` in the request.
+
+The real motivating factor for this feature however, is to support a, uh, feature
+of [jQuery](http://jquery.com/). If, to continue the above example, you use jQuery's
+AJAX features to send an array of style parameters to the endpoint, even if you specify
+the key "`style`" in your JSON object, jQuery will send the parameter with the
+name "`style[]`". It automatically adds square brackets to indicate that an array
+is being passed. You can work around that by making `style[]` an alias:
+
+      <param name="style" alias="css|style[]" repeatable="true"/>
+
+Like a list of values, a list of aliases can be separated by vertical bars.
 
 #### Matching in parameters
 
@@ -372,14 +409,15 @@ particular order or that all conditions will be evaluated.
 By default, the rewriter and endpoint parser will reject any request that
 includes additional, user-specified parameters. Sometimes you may want to
 write an endpoint that allows arbitrary parameters specified by the user.
-To enable this behavior, you can specify `user-params="allow"` on
-the `request` (or on the `http` method or even the parent `options` element).
-The value inherits down, but can be overridden at any level.
+This behavior is controlled by the `user-params` attribute. It can be specified
+on the `http` method, the `request`, or even the `options` element.
 
-If you specify the value `"ignore"`, then extra parameters will be silently
-ignored.
+It can have the following values:
 
-The only other legal value, `"forbid"`, is the default.
+* `forbid`, the default, forbids additional parameters
+* `ignore`, discards them
+* `allow`, allows them
+* `allow-dups`, allows them even if they duplicate `uri-param` parameters
 
 # REST endpoint library
 
