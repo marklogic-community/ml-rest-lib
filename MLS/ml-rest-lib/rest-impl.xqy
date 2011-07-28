@@ -243,9 +243,9 @@ declare private function rest-impl:uri-params-ok(
 ) as xs:boolean
 {
   let $user-params := map:get($reqenv, "params")
-  let $upset := (rest-impl:http($req,$reqenv)/@user-params,
-                 $req/@user-params,
-                 $req/parent::rest:options/@user-params)[1]
+  let $upset := string((rest-impl:http($req,$reqenv)/@user-params,
+                        $req/@user-params,
+                        $req/parent::rest:options/@user-params)[1])
   let $errors
     := if ($upset = "allow-dups")
        then
@@ -284,9 +284,9 @@ declare function rest-impl:params(
   (: Make sure we look at all params, not just top-level ones. :)
   let $allparam := ($request/rest:param, rest-impl:http($request, $reqenv)/rest:param)
 
-  let $upset   := (rest-impl:http($request,$reqenv)/@user-params,
-                   $request/@user-params,
-                   $request/parent::rest:options/@user-params)[1]
+  let $upset   := string((rest-impl:http($request,$reqenv)/@user-params,
+                          $request/@user-params,
+                          $request/parent::rest:options/@user-params)[1])
 
   let $map := map:map()
 
@@ -384,9 +384,9 @@ as xs:boolean
 {
   let $uri-params  := $request/rest:uri-param
   let $req-params  := ($request/rest:param, rest-impl:http($request,$reqenv)/rest:param)
-  let $user-params := (rest-impl:http($request,$reqenv)/@user-params,
-                       $request/@user-params,
-                       $request/parent::rest:options/@user-params)[1]
+  let $user-params := string((rest-impl:http($request,$reqenv)/@user-params,
+                              $request/@user-params,
+                              $request/parent::rest:options/@user-params)[1])
 
   let $errors
     := (
@@ -400,7 +400,7 @@ as xs:boolean
              rest-impl:no-match($raise-errors, $rest-impl:REQUIREDPARAM, $param/@name),
 
          (: check for extra params :)
-         if (empty($user-params) or $user-params = "forbid")
+         if ($user-params = "" or $user-params = "forbid")
          then
            for $name in map:keys($params)
            where not($uri-params[@name=$name]) and not($req-params[@name=$name])

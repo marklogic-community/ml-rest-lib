@@ -328,7 +328,7 @@ declare function local:run-param-test(
     then if (local:map-equal($expected, $result))
          then ()
          else $result
-    else if ($result = $expected)
+    else if (string($result) = string($expected))
          then ()
          else $result
 
