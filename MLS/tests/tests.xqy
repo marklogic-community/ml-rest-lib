@@ -1293,6 +1293,24 @@ declare variable $tests:unit-tests as element(tests:unit-tests) :=
       <result>REST-REPEATEDPARAM postOne</result>
     </param-test>
   </test-group>
+
+  <test-group id="group025">
+    <process-test>
+      <request xmlns="http://marklogic.com/appservices/rest"
+               uri="^/tests/query3/(\d*)/(\d+)$" endpoint="/tests/endpoint.xqy" user-params="allow">
+        <uri-param name="start" as="string">$1</uri-param>
+        <uri-param name="end" as="string">$2</uri-param>
+      </request>
+      <url>/tests/endpoint.xqy?a=b&amp;start=1&amp;end=10</url>
+      <result>
+        <entry key="start">1</entry>
+        <entry key="end">10</entry>
+        <entry key="a">b</entry>
+      </result>
+    </process-test>
+  </test-group>
+
+
 </unit-tests>;
 
 declare function tests:server-root()

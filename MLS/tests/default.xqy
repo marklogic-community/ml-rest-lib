@@ -37,6 +37,8 @@ declare function local:run-test(
     then local:run-param-test($group, $test, $test-number)
     else if ($test/self::tests:accept-test)
     then local:run-accept-test($group, $test, $test-number)
+    else if ($test/self::tests:process-test)
+    then local:run-process-test($group, $test, $test-number)
     else error((), concat("Unexpected test type: ", node-name($test)))
 };
 
@@ -75,7 +77,7 @@ declare function local:run-request-test(
                     let $_       := map:put($reqenv, "params", local:patch-params($rewrite))
                     let $params  := if (empty($rewrite))
                                     then ()
-                                    else rest-impl:process-requestXX($request, $reqenv)
+                                    else rest-impl:process-request($request, $reqenv)
                     let $errs    := if (empty($params) and empty($test/tests:result))
                                     then ()
                                     else local:errors($test, $params)
@@ -135,7 +137,7 @@ declare function local:patch-params(
 };
 
 declare function local:errors(
-  $test as element(tests:request-test),
+  $test as element(),
   $params as map:map
 ) as element(html:dd)?
 {
@@ -354,6 +356,38 @@ declare function local:run-param-test(
             (<span>{$msg}</span>, <br/>)
         }
       </dd>)
+};
+
+declare function local:run-process-test(
+  $group as element(tests:test-group),
+  $test as element(tests:process-test),
+  $test-number as xs:decimal
+)
+{
+  let $request := $test/rest:request
+  let $reqenv  := rest:request-environment()
+  let $uri     := $test/tests:url/string()
+  let $_       := map:put($reqenv, "uri", $uri)
+  let $_       := map:put($reqenv, "method", "GET")
+  let $_       := map:put($reqenv, "params", local:compute-params($uri))
+  let $params  := rest-impl:process-request($request, $reqenv)
+  let $errs    := local:errors($test, $params)
+  let $pf      := if (empty($errs)) then "PASS" else "FAIL"
+  return
+    (<dt xmlns="http://www.w3.org/1999/xhtml" class="{lower-case($pf)}">
+       { concat($pf, ": ", $group/@id, ": ", $test-number, " of ",
+         count($group/tests:process-test)) }
+     </dt>,
+     if (empty($errs))
+     then ()
+     else
+      <dd xmlns="http://www.w3.org/1999/xhtml">
+        { for $msg in $errs
+          return
+            (<span>{$msg}</span>, <br/>)
+        }
+      </dd>)
+
 };
 
 declare function local:map-equal($map1 as map:map, $map2 as map:map) as xs:boolean {
