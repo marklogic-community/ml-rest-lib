@@ -1310,7 +1310,35 @@ declare variable $tests:unit-tests as element(tests:unit-tests) :=
     </process-test>
   </test-group>
 
+  <test-group id="group026">
+    <options xmlns="http://marklogic.com/appservices/rest">
+      <request uri="^/tests/manage/field/([A-Za-z0-9-]+)(/)?$" endpoint="/data/manage/field.xqy">
+        <uri-param name="name" as="string">$1</uri-param>
+        <http method="GET"/>
+        <http method="POST">
+          <param name="includeKey" alias="includeKey[]" required="false" repeatable="true"/>
+          <param name="excludeKey" alias="excludeKey[]" required="false" repeatable="true"/>
+          <param name="includeElement" alias="includeElement[]" required="false" repeatable="true"/>
+          <param name="excludeElement" alias="excludeElement[]" required="false" repeatable="true"/>
+        </http>
+        <http method="DELETE"/>
+      </request>
+    </options>
 
+    <request-test method="POST">
+      <url>/manage/field/test?includeKey%5B%5D=included1&amp;includeKey%5B%5D=included2&amp;excludeKey%5B%5D=excluded1&amp;includeElement%5B%5D=nonselement&amp;excludeElement%5B%5D=excludenonsel</url>
+      <result>
+        <entry key="includeKey">
+          <value>included1</value>
+          <value>included2</value>
+        </entry>
+        <entry key="excludeKey">excluded1</entry>
+        <entry key="includeElement">nonselement</entry>
+        <entry key="excludeElement">excludenonsel</entry>
+        <entry key="name">test</entry>
+      </result>
+    </request-test>
+  </test-group>
 </unit-tests>;
 
 declare function tests:server-root()
