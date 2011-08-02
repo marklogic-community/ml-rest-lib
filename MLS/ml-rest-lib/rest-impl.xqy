@@ -438,9 +438,6 @@ as xs:boolean
 };
 
 (: ====================================================================== :)
-(: ====================================================================== :)
-(: ====================================================================== :)
-
 
 declare function rest-impl:conditions(
   $elem as element()*)
@@ -904,6 +901,30 @@ as xs:boolean
   let $trace := rest-impl:log(concat("Accept: ", $condition, ": ", $pass))
   return
     $pass
+};
+
+(: ====================================================================== :)
+
+declare function rest-impl:request-environment()
+as map:map
+{
+  let $params := map:map()
+  let $_ := for $name in xdmp:get-request-field-names()
+            let $values
+              := for $value in xdmp:get-request-field($name)
+                 return
+                   xdmp:url-decode($value)
+            return
+              map:put($params, xdmp:url-decode($name), $values)
+
+  let $reqenv := map:map()
+  let $_       := map:put($reqenv, "uri", xdmp:get-request-url())
+  let $_       := map:put($reqenv, "method", xdmp:get-request-method())
+  let $_       := map:put($reqenv, "accept", xdmp:get-request-header("Accept"))
+  let $_       := map:put($reqenv, "user-agent", xdmp:get-request-header("User-Agent"))
+  let $_       := map:put($reqenv, "params", $params)
+  return
+    $reqenv
 };
 
 (: ====================================================================== :)

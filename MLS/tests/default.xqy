@@ -58,7 +58,7 @@ declare function local:run-request-test(
 
   let $uri    := concat(tests:server-root(), $test/tests:url)
 
-  let $reqenv := rest:request-environment()
+  let $reqenv := rest-impl:request-environment()
   let $_      := map:put($reqenv, "params", local:compute-params($uri))
   let $_      := map:put($reqenv, "uri", concat("/tests", $test/tests:url))
   let $_      := map:put($reqenv, "method",
@@ -259,7 +259,7 @@ declare function local:run-accept-test(
 {
   let $trace   := xdmp:log(concat("Run test: ", $group/@id, ": ", $test-number, ": accept-test"))
   let $request := $test/rest:request
-  let $reqenv  := rest:request-environment()
+  let $reqenv  := rest-impl:request-environment()
   let $_       := map:put($reqenv, "uri", "/")
   let $_       := map:put($reqenv, "method", $test/tests:verb/string())
 
@@ -308,7 +308,7 @@ declare function local:run-param-test(
                                    (map:get($field-map,$param/@name), data($param)))
                   return
                     $field-map
-  let $reqenv  := rest:request-environment()
+  let $reqenv  := rest-impl:request-environment()
   let $_       := map:put($reqenv, "uri", "/")
   let $_       := map:put($reqenv, "method", $test/tests:verb/string())
   let $_       := map:put($reqenv, "params", $params)
@@ -365,7 +365,7 @@ declare function local:run-process-test(
 )
 {
   let $request := $test/rest:request
-  let $reqenv  := rest:request-environment()
+  let $reqenv  := rest-impl:request-environment()
   let $uri     := $test/tests:url/string()
   let $_       := map:put($reqenv, "uri", $uri)
   let $_       := map:put($reqenv, "method", "GET")
@@ -411,7 +411,7 @@ declare function local:run-auth-test(
 {
   let $trace  := xdmp:log(concat("Run test: ", $group/@id, ": ", $test-number, ": auth-test"))
   let $request := $test/rest:request
-  let $reqenv  := rest:request-environment()
+  let $reqenv  := rest-impl:request-environment()
   let $_       := map:put($reqenv, "uri", "/")
   let $_       := map:put($reqenv, "method", $test/tests:verb/string())
   let $query :=
