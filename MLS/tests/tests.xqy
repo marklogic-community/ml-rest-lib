@@ -294,7 +294,6 @@ declare variable $tests:unit-tests as element(tests:unit-tests) :=
     </request-test>
   </test-group>
 
-
   <test-group id="group012">
     <options xmlns="http://marklogic.com/appservices/rest">
       <request uri="^/(.*)$" endpoint="/tests/endpoint.xqy" user-params="ignore">
