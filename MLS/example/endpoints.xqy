@@ -18,6 +18,11 @@ declare variable $endpoints:ENDPOINTS as element(rest:options)
        {(: Serve /default.xqy by default so that the main page will be displayed :)}
        <request uri="^/$" endpoint="/default.xqy" user-params="ignore"/>
 
+       {(: Run the post tests if requested :)}
+       <request uri="^/tests/post$" endpoint="/tests/post.xqy" user-params="allow">
+         <http method="POST"/>
+       </request>
+
        {(: Run the unit tests if requested :)}
        <request uri="^/tests(/.*)?$" endpoint="/tests/default.xqy" user-params="allow"/>
 
