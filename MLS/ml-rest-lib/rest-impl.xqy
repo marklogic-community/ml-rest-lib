@@ -924,17 +924,8 @@ as map:map
 {
   let $params := map:map()
   let $_ := for $name in xdmp:get-request-field-names()
-            let $values
-              := for $value in xdmp:get-request-field($name)
-                 let $ctype := xdmp:get-request-field-content-type($name)
-                 return
-                   if ($ctype = 'application/octet-stream')
-                   then
-                     $value
-                   else
-                     xdmp:url-decode($value)
             return
-              map:put($params, xdmp:url-decode($name), $values)
+              map:put($params, $name, xdmp:get-request-field($name))
 
   let $reqenv := map:map()
   let $_       := map:put($reqenv, "uri", xdmp:get-request-url())
