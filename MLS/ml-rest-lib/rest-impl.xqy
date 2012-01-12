@@ -928,7 +928,8 @@ as map:map
             return
               map:put($params, $name, xdmp:get-request-field($name))
 
-  let $_ := if (xdmp:get-request-method() = "PUT"
+  let $_ := if ((xdmp:get-request-method() = "PUT"
+                 or xdmp:get-request-method() = "DELETE")
                 and starts-with(xdmp:get-request-header("Content-Type"),
                                 "application/x-www-form-urlencoded")
                 and $rest-impl:DECODEPUT)
