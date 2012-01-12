@@ -39,6 +39,7 @@ declare variable $rest-impl:FAILEDCONDITION   := xs:QName("rest:FAILEDCONDITION"
 :)
 
 declare variable $rest-impl:DEBUG as xs:boolean := false();
+declare variable $rest-impl:DECODEPUT as xs:boolean := true();
 
 declare function rest-impl:log($msgs as item()*) as empty-sequence() {
   if ($rest-impl:DEBUG)
@@ -926,6 +927,32 @@ as map:map
   let $_ := for $name in xdmp:get-request-field-names()
             return
               map:put($params, $name, xdmp:get-request-field($name))
+
+  let $_ := if (xdmp:get-request-method() = "PUT"
+                and starts-with(xdmp:get-request-header("Content-Type"),
+                                "application/x-www-form-urlencoded")
+                and $rest-impl:DECODEPUT)
+             then
+               try {
+                 (: FIXME: Be more careful about charset param; and are there better ways? :)
+                 let $ctype := xdmp:get-request-header("Content-Type")
+                 let $pcharset := if (contains($ctype, "charset="))
+                                  then substring-after($ctype,"charset=")
+                                  else "utf-8"
+                 let $body := xdmp:binary-decode(xdmp:get-request-body(),$pcharset)
+                 (: No exception? Go man go! :)
+                 let $parts := tokenize($body, "&amp;")
+                 for $part in $parts
+                 where contains($part, "=")
+                 return
+                   (map:put($params,
+                            xdmp:url-decode(substring-before($part,"=")),
+                            xdmp:url-decode(substring-after($part,"="))))
+               } catch ($e) {
+                 ()
+               }
+             else
+               ()
 
   let $reqenv := map:map()
   let $_       := map:put($reqenv, "uri", xdmp:get-request-url())
