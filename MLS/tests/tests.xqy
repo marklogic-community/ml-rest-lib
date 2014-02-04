@@ -667,6 +667,7 @@ declare variable $tests:unit-tests as element(tests:unit-tests) :=
     <accept-test>
       <request xmlns="http://marklogic.com/appservices/rest">
         <accept>application/xml</accept>
+        <accept>application/json</accept>
         <http method="GET"/>
         <http method="POST"/>
       </request>
@@ -699,6 +700,7 @@ declare variable $tests:unit-tests as element(tests:unit-tests) :=
     <accept-test>
       <request xmlns="http://marklogic.com/appservices/rest">
         <accept>application/xml</accept>
+        <accept>application/json</accept>
         <http method="GET"/>
         <http method="POST"/>
       </request>

@@ -773,6 +773,7 @@ as xs:boolean
     := for $elem in ($request/*, rest-impl:http($request,$reqenv)/*)
        where not($elem/self::rest:param
                  or $elem/self::rest:uri-param
+                 or $elem/self::rest:accept
                  or $elem/self::rest:http)
        return
          $elem
@@ -1032,14 +1033,18 @@ declare function rest-impl:report-error(
   $error as element(error:error))
 as element()
 {
-  (if ($error/error:code = "SEC-PRIV")
-   then xdmp:set-response-code(401, "Unauthorized")
-   else xdmp:set-response-code(400, "Bad Request"),
-  if (exists(xdmp:get-request-header("Accept")[contains(.,"text/html")]))
-  then
-    rest-impl:format-error-report($error)
-  else
-    $error)
+  (
+      if (fn:empty(xdmp:get-response-code()))
+      then 
+          if ($error/error:code = "SEC-PRIV")
+           then xdmp:set-response-code(403, "Unauthorized")
+           else xdmp:set-response-code(400, "Bad Request")
+      else (),
+      if (exists(xdmp:get-request-header("Accept")[contains(.,"text/html")]))
+      then
+        rest-impl:format-error-report($error)
+      else
+        $error)
 };
 
 declare function rest-impl:format-error-report(
